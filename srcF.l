@@ -21,7 +21,3 @@ ID [a-zA-Z][a-zA-Z0-9]*
 "(" {return PARENIZQUIERDO;}
 "-1" {return FDT;}
 %%
-int main(){
-    yylex();
-    return 0;
-}
