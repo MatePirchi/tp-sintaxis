@@ -28,6 +28,7 @@ void escribirEnTS(char* idAgreg, int valAgreg);
 int indiceEnTS(char* idBuscado);
 int valorID(char* id);
 int procOperacion(int num1, int op, int num2);
+void mostrarIDyValor(char* id);
 
 %}
 
@@ -39,7 +40,7 @@ int procOperacion(int num1, int op, int num2);
 %token INICIO FIN LEER ESCRIBIR ASIGNACION PUNTOYCOMA COMA SUMA RESTA PARENDERERCHO PARENIZQUIERDO MULTIPLICACION
 %token <cadena> ID
 %token <num> CONSTANTE 
-%type <num> primaria expresion operador termino
+%type <num> primaria expresion operadorAditivo termino listaIdentificadores
 
 %%
 objetivo: programa 
@@ -48,21 +49,21 @@ objetivo: programa
 programa: INICIO listaSentencia FIN
 ;
 
-operador: SUMA {$$ = 1;}
+operadorAditivo: SUMA {$$ = 1;}
 |RESTA {$$ = 2;}
 ;
 
 listaSentencia: sentencia 
-|listaSentencia sentencia {printf("lista de sentencias identificada\n");}
+|listaSentencia sentencia
 ;
 
 sentencia: ID ASIGNACION expresion PUNTOYCOMA {escribirEnTS($1, $3); printf("Se declara id %s, Almacenada con valor %d \n", $1, $3);}
-|LEER PARENIZQUIERDO listaIdentificadores PARENDERERCHO PUNTOYCOMA {printf("sentencia con LEER identificada");}
-|ESCRIBIR PARENIZQUIERDO listaExpresiones PARENDERERCHO PUNTOYCOMA {printf("sentencia con ESCRIBIR identificada");}
+|LEER {printf("READ[");} PARENIZQUIERDO listaIdentificadores PARENDERERCHO PUNTOYCOMA {printf("]");}
+|ESCRIBIR PARENIZQUIERDO listaExpresiones PARENDERERCHO PUNTOYCOMA {printf("sentencia con ESCRIBIR identificada\n");}
 ;
 
-listaIdentificadores: listaIdentificadores COMA ID
-|ID {printf("lista de identificadores identificada\n");}
+listaIdentificadores: ID {mostrarIDyValor($1);}
+|listaIdentificadores COMA ID {printf(", "); mostrarIDyValor($3);}
 ;
 
 listaExpresiones: listaExpresiones COMA expresion
@@ -71,7 +72,7 @@ listaExpresiones: listaExpresiones COMA expresion
 
 expresion:primaria {$$ = $1;}
 |termino {$$ = $1;}
-|expresion operador termino  {$$ = procOperacion($1, $2, $3);}
+|expresion operadorAditivo termino  {$$ = procOperacion($1, $2, $3);}
 ;
 
 termino: primaria {/* Creo "termino" para que se haga primero la multiplicacion y luego la suma/resta */}
@@ -108,7 +109,7 @@ int main(int argc, char** argv) {
 
     // Parser
     switch (yyparse()){
-        case 0: printf("\n\nProceso de compilacion termino exitosamente");
+        case 0: printf("\n\nProceso de compilacion exitoso");
         break;
         case 1: printf("\n\nErrores de compilacion");
         break;
@@ -165,6 +166,17 @@ void escribirEnTS(char* idAgreg, int valAgreg){ //agrega idAgreg a TS con valor 
 }
 
 //////////AUXILIARES/////////
+void mostrarIDyValor(char* id){
+    int ind = indiceEnTS(id);
+    printf("%s:", id);
+    if(TS[ind].id[0] == '$'){
+        printf("SinValor");
+    }
+    else{
+        printf("%d",TS[ind].val);
+    }
+}
+
 int procOperacion(int num1, int op, int num2){
     if (op == 1){
         return num1 + num2;
@@ -176,3 +188,4 @@ int procOperacion(int num1, int op, int num2){
         return num1 * num2;
     }
 }
+
