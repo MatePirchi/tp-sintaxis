@@ -40,7 +40,7 @@ void mostrarIDyValor(char* id);
 %token INICIO FIN LEER ESCRIBIR ASIGNACION PUNTOYCOMA COMA SUMA RESTA PARENDERERCHO PARENIZQUIERDO MULTIPLICACION
 %token <cadena> ID
 %token <num> CONSTANTE 
-%type <num> primaria expresion operadorAditivo termino listaIdentificadores
+%type <num> primaria expresion operadorAditivo termino listaIdentificadores listaExpresiones
 
 %%
 objetivo: programa 
@@ -58,16 +58,16 @@ listaSentencia: sentencia
 ;
 
 sentencia: ID ASIGNACION expresion PUNTOYCOMA {escribirEnTS($1, $3); printf("Se declara id %s, Almacenada con valor %d \n", $1, $3);}
-|LEER {printf("READ[");} PARENIZQUIERDO listaIdentificadores PARENDERERCHO PUNTOYCOMA {printf("]");}
-|ESCRIBIR PARENIZQUIERDO listaExpresiones PARENDERERCHO PUNTOYCOMA {printf("sentencia con ESCRIBIR identificada\n");}
+|LEER {printf("READ[");} PARENIZQUIERDO listaIdentificadores PARENDERERCHO PUNTOYCOMA {printf("]\n");}
+|ESCRIBIR{printf("WRITE( ");} PARENIZQUIERDO listaExpresiones PARENDERERCHO PUNTOYCOMA {printf(")\n");}
 ;
 
 listaIdentificadores: ID {mostrarIDyValor($1);}
 |listaIdentificadores COMA ID {printf(", "); mostrarIDyValor($3);}
 ;
 
-listaExpresiones: listaExpresiones COMA expresion
-|expresion {printf("lista de expresiones identificada\n");}
+listaExpresiones: expresion {printf("%d", $1);}
+|listaExpresiones COMA expresion {printf(", %d", $3);} 
 ;
 
 expresion:primaria {$$ = $1;}
