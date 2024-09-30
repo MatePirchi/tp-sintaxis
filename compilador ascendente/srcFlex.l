@@ -1,13 +1,12 @@
 %{
     #include <stdio.h>
-    #include <stdlib.h>
     #include <string.h>
     #include "y.tab.h"
 
     void yyerror(char *s);
     int yylex();
     
-    char buffer[50];
+    char buffer[128];
     int yylexerrs;
 %}
 letra [a-zA-Z]

@@ -3,12 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 extern char *yytext;
-extern int yyleng;
 extern int yylex(void);
 extern void yyerror(char*);
-int variable=0;
 extern int yynerrs;
 extern int yylexerrs;
 extern FILE* yyin;
