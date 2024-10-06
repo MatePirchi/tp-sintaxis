@@ -34,9 +34,11 @@ void mostrarIDyValor(char* id);
     int num;
     short operacion;
 }
-%token INICIO FIN LEER ESCRIBIR ASIGNACION PUNTOYCOMA COMA SUMA RESTA PARENDERERCHO PARENIZQUIERDO MULTIPLICACION
+%token INICIO FIN LEER ESCRIBIR PUNTOYCOMA PARENDERERCHO PARENIZQUIERDO 
 %token <cadena> ID
 %token <num> CONSTANTE 
+%left SUMA RESTA COMA MULTIPLICACION
+%right ASIGNACION
 %type <num> primaria expresion operadorAditivo termino listaIdentificadores listaExpresiones
 
 %%
@@ -67,13 +69,13 @@ listaExpresiones: expresion {printf("%d", $1);}
 |listaExpresiones COMA expresion {printf(", %d", $3);} 
 ;
 
-expresion:primaria {$$ = $1;}
-|termino {$$ = $1;}
+expresion: termino {$$ = $1;}
 |expresion operadorAditivo termino  {$$ = procOperacion($1, $2, $3);}
 ;
 
 termino: primaria {/* Creo "termino" para que se haga primero la multiplicacion y luego la suma/resta */}
 |termino MULTIPLICACION primaria {$$ = $1 * $3;}
+;
 
 primaria: ID {$$ = valorID($1);}
 |CONSTANTE {$$ = $1;}
